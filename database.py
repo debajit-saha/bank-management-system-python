@@ -1,6 +1,7 @@
 import sqlite3
 from customer import Customer
 from account import Account
+from decorators import log_query
 
 DB_NAME = "bank.db"
 
@@ -9,9 +10,12 @@ class Database:
 
     @staticmethod
     def get_connection():
-        return sqlite3.connect(DB_NAME)
+        connection = sqlite3.connect(DB_NAME)
+        connection.execute("PRAGMA foreign_keys = ON")
+        return connection
 
     @staticmethod
+    @log_query
     def create_tables():
         try:
             with Database.get_connection() as connection:
@@ -19,31 +23,31 @@ class Database:
 
                 cursor.execute("""
                     CREATE TABLE IF NOT EXISTS customers(
-                        customer_id INTEGER PRIMARY KEY,
+                        customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT NOT NULL,
                         phone TEXT NOT NULL
                     )
                 """)
 
-                cursor.execute("""
+                cursor.execute(""" 
                     CREATE TABLE IF NOT EXISTS accounts(
-                        account_id INTEGER PRIMARY KEY,
+                        account_id INTEGER PRIMARY KEY AUTOINCREMENT,
                         account_number TEXT UNIQUE NOT NULL,
                         customer_id INTEGER NOT NULL,
                         balance REAL NOT NULL,
-
                         FOREIGN KEY(customer_id)
                             REFERENCES customers(customer_id)
                     )
                 """)
 
                 connection.commit()
-                print("Customers table created successfully.")
+                print("Database tables created successfully.")
 
         except sqlite3.Error as ex:
             print(f"Database Error: {ex}")
 
     @staticmethod
+    @log_query
     def insert_customer(customer: Customer):
         try:
             with Database.get_connection() as connection:
@@ -61,6 +65,7 @@ class Database:
             print(f"Database Error: {ex}")
 
     @staticmethod
+    @log_query
     def get_all_customers():
         try:
             with Database.get_connection() as connection:
@@ -86,6 +91,7 @@ class Database:
             return []
 
     @staticmethod
+    @log_query
     def get_customer_by_id(customer_id):
         try:
             with Database.get_connection() as connection:
@@ -114,6 +120,7 @@ class Database:
             print(f"Database Error: {ex}")
 
     @staticmethod
+    @log_query
     def insert_account(account: Account) -> None:
         try:
             with Database.get_connection() as connection:
@@ -136,6 +143,7 @@ class Database:
             print(ex)
 
     @staticmethod
+    @log_query
     def get_account_by_number(account_number: str) -> Account | None:
         try:
             with Database.get_connection() as connection:
@@ -164,6 +172,7 @@ class Database:
             return None
 
     @staticmethod
+    @log_query
     def get_all_accounts() -> list[Account]:
         try:
             with Database.get_connection() as connection:
@@ -188,6 +197,7 @@ class Database:
             return []
 
     @staticmethod
+    @log_query
     def update_balance(account_number: str, balance: float) -> None:
         try:
             with Database.get_connection() as connection:
