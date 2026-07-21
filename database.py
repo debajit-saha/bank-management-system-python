@@ -15,7 +15,7 @@ class Database:
         return connection
 
     @staticmethod
-    @log_query
+    @log_query()
     def create_tables():
         try:
             with Database.get_connection() as connection:
@@ -47,7 +47,7 @@ class Database:
             print(f"Database Error: {ex}")
 
     @staticmethod
-    @log_query
+    @log_query()
     def insert_customer(customer: Customer):
         try:
             with Database.get_connection() as connection:
@@ -65,7 +65,7 @@ class Database:
             print(f"Database Error: {ex}")
 
     @staticmethod
-    @log_query
+    @log_query(log_args=True, log_result=True)
     def get_all_customers():
         try:
             with Database.get_connection() as connection:
@@ -91,7 +91,7 @@ class Database:
             return []
 
     @staticmethod
-    @log_query
+    @log_query()
     def get_customer_by_id(customer_id):
         try:
             with Database.get_connection() as connection:
@@ -120,7 +120,7 @@ class Database:
             print(f"Database Error: {ex}")
 
     @staticmethod
-    @log_query
+    @log_query()
     def insert_account(account: Account) -> None:
         try:
             with Database.get_connection() as connection:
@@ -143,7 +143,7 @@ class Database:
             print(ex)
 
     @staticmethod
-    @log_query
+    @log_query()
     def get_account_by_number(account_number: str) -> Account | None:
         try:
             with Database.get_connection() as connection:
@@ -172,7 +172,7 @@ class Database:
             return None
 
     @staticmethod
-    @log_query
+    @log_query()
     def get_all_accounts() -> list[Account]:
         try:
             with Database.get_connection() as connection:
@@ -197,7 +197,7 @@ class Database:
             return []
 
     @staticmethod
-    @log_query
+    @log_query()
     def update_balance(account_number: str, balance: float) -> None:
         try:
             with Database.get_connection() as connection:
